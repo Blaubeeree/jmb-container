@@ -7,21 +7,26 @@ LABEL maintainer="chrisb09 <mail@christian-f-brinkmann.de>"
 RUN apk add --no-cache \
     openjdk11 \
     maven \
-    git
+    git \
+    curl \
+    libgcc \
+    ca-certificates \
+    && rm -rf /var/cache/apk/*
+
 
 # Clone the repository and build the project
-RUN git clone https://github.com/chrisb09/MusicBot.git /jmb/MusicBot && \
+RUN git clone --branch dave-fix https://github.com/chrisb09/MusicBot.git /jmb/MusicBot && \
     cd /jmb/MusicBot && \
-    mvn clean package
+    mvn clean package -e
 
 # Stage 2: Prepare a minimal runtime environment with just the JRE
 FROM alpine:3
 
 # Install the necessary runtime environment (JRE only)
-RUN apk add --no-cache openjdk11-jre-headless su-exec tini
+RUN apk add --no-cache openjdk11-jre-headless su-exec tini libgcc ca-certificates
 
 # Copy the compiled jar from the build stage
-COPY --from=builder /jmb/MusicBot/target/JMusicBot-Snapshot-All.jar /jmb/JMusicBot.jar
+COPY --from=builder /jmb/MusicBot/target/JMusicBot-*-All.jar /jmb/JMusicBot.jar
 COPY --from=builder /jmb/MusicBot/src/main/resources/reference.conf /jmb/reference/config.txt
 
 # Create necessary directories and set permissions
