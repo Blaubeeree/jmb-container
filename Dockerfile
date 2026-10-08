@@ -29,7 +29,7 @@ ARG CACHE_BUST=""
 RUN echo "Cache invalidation: ${CACHE_BUST}"
 
 RUN if [ -z "$LOCAL_BUILD_PATH" ]; then \
-      git clone --branch dave-fix https://github.com/chrisb09/MusicBot.git /jmb/MusicBot && \
+      git clone https://github.com/Blaubeeree/MusicBot.git /jmb/MusicBot && \
       cd /jmb/MusicBot && \
       mvn clean package -e; \
     else \

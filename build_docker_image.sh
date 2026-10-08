@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Build the JMusicBot Docker image
 # Options:
 #   --no-cache             : Disable Docker build cache
@@ -7,8 +7,8 @@
 
 NO_CACHE=""
 LOCAL_PATH=""
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BUILD_CONTEXT_DIR="$SCRIPT_DIR/build-context"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+BUILD_CONTEXT_DIR="${SCRIPT_DIR}/build-context"
 
 # Clean up any previous build context
 rm -rf "$BUILD_CONTEXT_DIR"
