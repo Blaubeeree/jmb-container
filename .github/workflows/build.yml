@@ -42,6 +42,8 @@ jobs:
               uses: Blaubeeree/docker-digest-builder@master
               with:
                   platform: ${{ matrix.platform }}
+                  cache-from: false
+                  cache-to: false
                   build-args: |
                       BUILD_DATE=${{ env.BUILD_DATE }}
                       VCS_REF=${{ env.VCS_REF }}
