@@ -1,3 +1,4 @@
 .*
+!.github
 !.gitignore
 build.log

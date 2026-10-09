@@ -1,3 +1,8 @@
+## Setup:
+# enable read and write permissions for actions to use ghcr.io
+# or
+# set vars.REGISTRY, vars.DOCKER_USERNAME and secrets.DOCKER_PASSWORD to use a different registry
+
 name: Docker Image Build
 
 on:
@@ -41,10 +46,10 @@ jobs:
             BUILD_DATE=${{ env.BUILD_DATE }}
             VCS_REF=${{ env.VCS_REF }}
             VERSION=${{ env.VERSION }}
-          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/jmusicbot
           normalize: true
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/jmusicbot
 
-  manifest:
+  create-manifest:
     needs: buildx
     runs-on: ubuntu-latest
     steps:
@@ -57,6 +62,7 @@ jobs:
       - name: Create Multi-Arch Manifest
         uses: carry0987/docker-multi-arch-manifest@v1
         with:
+          normalize: true
           image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/jmusicbot
           tags: |
             latest
