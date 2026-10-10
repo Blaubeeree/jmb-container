@@ -22,7 +22,7 @@ ARG LOCAL_BUILD_PATH=""
 
 # Copy build artifacts from build context if they exist
 # (build-context/ dir structure is created by build_docker_image.sh when using --local-build)
-COPY build-context/ /tmp/build-context/
+COPY build-context* /tmp/build-context/
 
 # Cache invalidation: forces rebuild from here onwards (timestamp passed by build script)
 ARG CACHE_BUST=""
