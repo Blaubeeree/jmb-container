@@ -6,66 +6,66 @@
 name: Docker Image Build
 
 on:
-    workflow_dispatch:
-        inputs:
-            version:
-                description: 'JMusicBot version'
-                required: true
-                type: string
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'JMusicBot version'
+        required: true
+        type: string
 
 env:
-    REGISTRY: ${{ vars.REGISTRY || 'ghcr.io' }}
-    USERNAME: ${{ vars.REGISTRY && vars.DOCKER_USERNAME || github.actor }}
-    PASSWORD: ${{ vars.REGISTRY && secrets.DOCKER_PASSWORD || secrets.GITHUB_TOKEN}}
+  REGISTRY: ${{ vars.REGISTRY || 'ghcr.io' }}
+  USERNAME: ${{ vars.REGISTRY && vars.DOCKER_USERNAME || github.actor }}
+  PASSWORD: ${{ vars.REGISTRY && secrets.DOCKER_PASSWORD || secrets.GITHUB_TOKEN}}
 
 jobs:
-    buildx:
-        strategy:
-            matrix:
-                platform: [linux/amd64, linux/arm64]
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Login to Registry
-              uses: docker/login-action@v3
-              with:
-                  registry: ${{ env.REGISTRY }}
-                  username: ${{ env.USERNAME }}
-                  password: ${{ env.PASSWORD }}
-            - name: Set environment variables
-              run: |
-                  echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-                  echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-                  echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
-            - name: Build and push
-              uses: Blaubeeree/docker-digest-builder@master
-              with:
-                  platform: ${{ matrix.platform }}
-                  cache-from: false
-                  cache-to: false
-                  build-args: |
-                      BUILD_DATE=${{ env.BUILD_DATE }}
-                      VCS_REF=${{ env.VCS_REF }}
-                      VERSION=${{ env.VERSION }}
-                  normalize: true
-                  image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/jmusicbot
+  buildx:
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.USERNAME }}
+          password: ${{ env.PASSWORD }}
+      - name: Set environment variables
+        run: |
+          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+          echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+      - name: Build and push
+        uses: Blaubeeree/docker-digest-builder@master
+        with:
+          platform: ${{ matrix.platform }}
+          cache-from: false
+          cache-to: false
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VCS_REF=${{ env.VCS_REF }}
+            VERSION=${{ env.VERSION }}
+          normalize: true
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/jmusicbot
 
-    create-manifest:
-        needs: buildx
-        runs-on: ubuntu-latest
-        steps:
-            - name: Login to Registry
-              uses: docker/login-action@v3
-              with:
-                  registry: ${{ env.REGISTRY }}
-                  username: ${{ env.USERNAME }}
-                  password: ${{ env.PASSWORD }}
-            - name: Create Multi-Arch Manifest
-              uses: carry0987/docker-multi-arch-manifest@v1
-              with:
-                  normalize: true
-                  image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/jmusicbot
-                  tags: |
-                      latest
-                      ${{ inputs.version }}
+  create-manifest:
+    needs: buildx
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.USERNAME }}
+          password: ${{ env.PASSWORD }}
+      - name: Create Multi-Arch Manifest
+        uses: carry0987/docker-multi-arch-manifest@v1
+        with:
+          normalize: true
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/jmusicbot
+          tags: |
+            latest
+            ${{ inputs.version }}
