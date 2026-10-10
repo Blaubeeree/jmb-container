@@ -39,11 +39,11 @@ jobs:
                   echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
                   echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
             - name: Build and push
-              uses: Blaubeeree/docker-digest-builder@d064db60666fc28fcf2a117689773c37094085e5
+              uses: Blaubeeree/docker-digest-builder@master
               with:
                   platform: ${{ matrix.platform }}
-                  cache-from: "false"
-                  cache-to: "false"
+                  #   cache-from: false
+                  #   cache-to: false
                   build-args: |
                       BUILD_DATE=${{ env.BUILD_DATE }}
                       VCS_REF=${{ env.VCS_REF }}
